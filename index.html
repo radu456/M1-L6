@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Povestea Mea Preferată - Joc Interactiv</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FF6B6B">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: bounceIn 1s ease-out;
+        }
+
+        .header h1 {
+            color: #FF6B6B;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .game-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        .game-title {
+            color: #4ECDC4;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #4ECDC4;
+            padding-bottom: 10px;
+        }
+
+        .story-box {
+            background: linear-gradient(135deg, #FFE066, #FF6B6B);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            color: white;
+            font-size: 1.1em;
+            line-height: 1.6;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .riddle-box {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .question {
+            background: #F8F9FA;
+            border-left: 5px solid #4ECDC4;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .option-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #764ba2, #667eea);
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        .option-btn.incorrect {
+            background: linear-gradient(135deg, #FF6B6B, #EE5A52);
+            animation: shake 0.6s ease-in-out;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .feedback.correct {
+            background: #D4EDDA;
+            color: #155724;
+            border: 2px solid #4ECDC4;
+        }
+
+        .feedback.incorrect {
+            background: #F8D7DA;
+            color: #721C24;
+            border: 2px solid #FF6B6B;
+        }
+
+        .score-board {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 25px;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .score-correct {
+            color: #4ECDC4;
+        }
+
+        .score-incorrect {
+            color: #FF6B6B;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #FFE066, #FF6B6B);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #E0E0E0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4ECDC4, #44A08D);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            z-index: 2000;
+            animation: bounceIn 1s ease-out;
+        }
+
+        .celebration h2 {
+            color: #4ECDC4;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .celebration p {
+            font-size: 1.3em;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .score-board {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="score-board">
+        <div>Corecte: <span class="score-correct" id="correctScore">0</span></div>
+        <div>Greșite: <span class="score-incorrect" id="incorrectScore">0</span></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>📚 Povestea Mea Preferată!</h1>
+            <p>Aventuri cu ghicitori și povești magice</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <!-- Secțiunea 1: Introducerea poveștii -->
+        <div class="game-section" id="section1">
+            <h2 class="game-title">🗝️ Aventura Ilincăi</h2>
+            <div class="story-box">
+                <p>Mă cheamă Ilinca, am 9 ani și vreau să vă povestesc despre povestea mea preferată. Nu e una dintr-o carte, ci una pe care am trăit-o chiar eu. 👧</p>
+                <p>Și e preferata mea pentru că a fost plină de mister, aventură și... ghicitori! 🔍</p>
+                <p>Totul a început într-o zi ploioasă, când am găsit o cheie veche în podul bunicii. Pe ea scria: „Cine răspunde corect, găsește comoara!" 🗝️</p>
+                <p>Am simțit cum inima îmi bate mai tare. Era clar că începea o aventură! Dar ca să ajung la comoară, trebuia să răspund corect la niște ghicitori. ✨</p>
+            </div>
+
+            <div class="riddle-box">
+                🔍 Prima ghicitoare:<br>
+                „Sunt galben, rotund și pe cer mă găsești,<br>
+                Ziua pe cer, noaptea... nu mă zărești!"
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(1, 'c', this)">a) Luna</button>
+                <button class="option-btn" onclick="selectAnswer(1, 'c', this)">b) Steaua</button>
+                <button class="option-btn" onclick="selectAnswer(1, 'c', this)">c) Soarele</button>
+            </div>
+            <div id="feedback1" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next1" onclick="nextSection(2)">Următoarea ghicitoare! 🌟</button>
+        </div>
+
+        <!-- Secțiunea 2: A doua ghicitoare -->
+        <div class="game-section hidden" id="section2">
+            <h2 class="game-title">🌳 În grădina din spate</h2>
+            
+            <div class="story-box">
+                <p>Am ales „Soarele" și cheia a început să strălucească! ✨</p>
+                <p>M-am dus în grădina din spatele casei, unde era un copac bătrân. Sub el, am găsit o cutie de lemn. 📦</p>
+                <p>Dar nu se deschidea. Pe capac era altă ghicitoare... 🤔</p>
+            </div>
+
+            <div class="riddle-box">
+                🕵♀ A doua ghicitoare:<br>
+                „Am ac și nu cos,<br>
+                Dar orele ți le spun frumos!"
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(2, 'a', this)">a) Ceas</button>
+                <button class="option-btn" onclick="selectAnswer(2, 'a', this)">b) Busolă</button>
+                <button class="option-btn" onclick="selectAnswer(2, 'a', this)">c) Ceasornic</button>
+            </div>
+            <div id="feedback2" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next2" onclick="nextSection(3)">Către locul secret! 🗺️</button>
+        </div>
+
+        <!-- Secțiunea 3: A treia ghicitoare -->
+        <div class="game-section hidden" id="section3">
+            <h2 class="game-title">🌲 Locul secret</h2>
+            
+            <div class="story-box">
+                <p>Bineînțeles, am ales ceasornicul. Cutia s-a deschis și înăuntru era o hartă spre „Locul Secret"! 🗺️</p>
+                <p>M-am dus acolo cu bunicul. Era o scorbură în trunchiul unui stejar. Înăuntru – o pungă de pânză și... o ultimă ghicitoare! 🎒</p>
+            </div>
+
+            <div class="riddle-box">
+                🧠 A treia ghicitoare:<br>
+                „Am coadă, dar nu-s animal,<br>
+                Pe foaie scriu, nu fac scandal!"
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(3, 'a', this)">a) Creion</button>
+                <button class="option-btn" onclick="selectAnswer(3, 'b', this)">b) Pix</button>
+                <button class="option-btn" onclick="selectAnswer(3, 'b', this)">c) Riglă</button>
+            </div>
+            <div id="feedback3" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next3" onclick="nextSection(4)">Comoara găsită! 💎</button>
+        </div>
+
+        <!-- Secțiunea 4: Finalul poveștii și începutul ghicitorilor -->
+        <div class="game-section hidden" id="section4">
+            <h2 class="game-title">💎 Comoara descoperită</h2>
+            
+            <div class="story-box">
+                <p>Am răspuns „pix" și... dintr-o dată, punga s-a deschis! 🎉</p>
+                <p>Înăuntru era o brățară veche și o scrisoare de la străbunica mea, care fusese o mare iubitoare de enigme. 💌</p>
+                <p>Acum să vezi dacă poți rezolva și tu ghicitorile ei preferate! 🧩</p>
+            </div>
+
+            <div class="riddle-box">
+                🧠 Ghicitoarea 1:<br>
+                „Mă găsești în pom vara,<br>
+                Sunt dulce, roșie, gustoasă tare!"
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(4, 'b', this)">a) Banana</button>
+                <button class="option-btn" onclick="selectAnswer(4, 'b', this)">b) Cireașă</button>
+                <button class="option-btn" onclick="selectAnswer(4, 'b', this)">c) Lămâie</button>
+            </div>
+            <div id="feedback4" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next4" onclick="nextSection(5)">Următoarea ghicitoare! 🐰</button>
+        </div>
+
+        <!-- Secțiunea 5: Ghicitoarea cu iepurele -->
+        <div class="game-section hidden" id="section5">
+            <h2 class="game-title">🐰 Ghicitoarea cu animalul</h2>
+            
+            <div class="riddle-box">
+                🧠 Ghicitoarea 2:<br>
+                „Am urechi dar nu aud,<br>
+                Sunt blănos și alerg mult."
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(5, 'b', this)">a) Cățel</button>
+                <button class="option-btn" onclick="selectAnswer(5, 'b', this)">b) Iepure</button>
+                <button class="option-btn" onclick="selectAnswer(5, 'b', this)">c) Pisică</button>
+            </div>
+            <div id="feedback5" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next5" onclick="nextSection(6)">Următoarea ghicitoare! ❄️</button>
+        </div>
+
+        <!-- Secțiunea 6: Ghicitoarea cu zăpada -->
+        <div class="game-section hidden" id="section6">
+            <h2 class="game-title">❄️ Ghicitoarea de iarnă</h2>
+            
+            <div class="riddle-box">
+                🧠 Ghicitoarea 3:<br>
+                „Sunt albă, rece și cade din cer.<br>
+                Iarna mă vezi, nu primăvara, sper!"
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(6, 'b', this)">a) Plouă</button>
+                <button class="option-btn" onclick="selectAnswer(6, 'b', this)">b) Ninsoare</button>
+                <button class="option-btn" onclick="selectAnswer(6, 'b', this)">c) Gheață</button>
+            </div>
+            <div id="feedback6" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next6" onclick="nextSection(7)">Următoarea ghicitoare! ✂️</button>
+        </div>
+
+        <!-- Secțiunea 7: Ghicitoarea cu pieptenul -->
+        <div class="game-section hidden" id="section7">
+            <h2 class="game-title">✂️ Ghicitoarea cu dinții</h2>
+            
+            <div class="riddle-box">
+                🧠 Ghicitoarea 4:<br>
+                „Am dinți, dar nu mănânc,<br>
+                Părul îl tund, dacă mă strângi."
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(7, 'b', this)">a) Cuțit</button>
+                <button class="option-btn" onclick="selectAnswer(7, 'b', this)">b) Pieptene</button>
+                <button class="option-btn" onclick="selectAnswer(7, 'b', this)">c) Furculiță</button>
+            </div>
+            <div id="feedback7" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next7" onclick="nextSection(8)">Următoarea ghicitoare! 🦉</button>
+        </div>
+
+        <!-- Secțiunea 8: Ghicitoarea cu bufnița -->
+        <div class="game-section hidden" id="section8">
+            <h2 class="game-title">🦉 Ghicitoarea cu pasărea</h2>
+            
+            <div class="riddle-box">
+                🧠 Ghicitoarea 5:<br>
+                „Ziua zboară, noaptea stă,<br>
+                Și-n copac adesea dă."
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(8, 'a', this)">a) Vrabie</button>
+                <button class="option-btn" onclick="selectAnswer(8, 'a', this)">b) Liliac</button>
+                <button class="option-btn" onclick="selectAnswer(8, 'a', this)">c) Bufniță</button>
+            </div>
+            <div id="feedback8" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next8" onclick="nextSection(9)">Următoarea ghicitoare! 🚗</button>
+        </div>
+
+        <!-- Secțiunea 9: Ghicitoarea cu mașina -->
+        <div class="game-section hidden" id="section9">
+            <h2 class="game-title">🚗 Ghicitoarea cu roțile</h2>
+            
+            <div class="riddle-box">
+                🧠 Ghicitoarea 6:<br>
+                „Am patru roți și claxon,<br>
+                Dar nu merg pe balcon!"
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(9, 'a', this)">a) Mașină</button>
+                <button class="option-btn" onclick="selectAnswer(9, 'a', this)">b) Bicicletă</button>
+                <button class="option-btn" onclick="selectAnswer(9, 'a', this)">c) Patine</button>
+            </div>
+            <div id="feedback9" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next9" onclick="nextSection(10)">Următoarea ghicitoare! 🥚</button>
+        </div>
+
+        <!-- Secțiunea 10: Ghicitoarea cu gălbenușul -->
+        <div class="game-section hidden" id="section10">
+            <h2 class="game-title">🥚 Ghicitoarea cu oul</h2>
+            
+            <div class="riddle-box">
+                🧠 Ghicitoarea 7:<br>
+                „E galben înăuntru, alb pe dinafară,<br>
+                Și găsit în ou la fiecare masă rară."
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(10, 'c', this)">a) Lapte</button>
+                <button class="option-btn" onclick="selectAnswer(10, 'c', this)">b) Cașcaval</button>
+                <button class="option-btn" onclick="selectAnswer(10, 'c', this)">c) Gălbenuș</button>
+            </div>
+            <div id="feedback10" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next10" onclick="nextSection(11)">Următoarea ghicitoare! ✏️</button>
+        </div>
+
+        <!-- Secțiunea 11: Ghicitoarea cu stiloul -->
+        <div class="game-section hidden" id="section11">
+            <h2 class="game-title">✏️ Ghicitoarea cu scrisul</h2>
+            
+            <div class="riddle-box">
+                🧠 Ghicitoarea 8:<br>
+                „Mă pui în ghiozdan dimineața,<br>
+                Și scrii cu mine toată viața!"
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(11, 'b', this)">a) Radieră</button>
+                <button class="option-btn" onclick="selectAnswer(11, 'b', this)">b) Stilou</button>
+                <button class="option-btn" onclick="selectAnswer(11, 'b', this)">c) Penar</button>
+            </div>
+            <div id="feedback11" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next11" onclick="nextSection(12)">Următoarea ghicitoare! ⏰</button>
+        </div>
+
+        <!-- Secțiunea 12: Ghicitoarea cu ceasul -->
+        <div class="game-section hidden" id="section12">
+            <h2 class="game-title">⏰ Ghicitoarea cu timpul</h2>
+            
+            <div class="riddle-box">
+                🧠 Ghicitoarea 9:<br>
+                „Fără gură, fără glas,<br>
+                Ceasul merge ceas de ceas!"
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(12, 'b', this)">a) Telefon</button>
+                <button class="option-btn" onclick="selectAnswer(12, 'b', this)">b) Ceas</button>
+                <button class="option-btn" onclick="selectAnswer(12, 'b', this)">c) Calendar</button>
+            </div>
+            <div id="feedback12" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next12" onclick="nextSection(13)">Ultima ghicitoare! 🏀</button>
+        </div>
+
+        <!-- Secțiunea 13: Ghicitoarea cu trambulina -->
+        <div class="game-section hidden" id="section13">
+            <h2 class="game-title">🏀 Ghicitoarea cu săritul</h2>
+            
+            <div class="riddle-box">
+                🧠 Ghicitoarea 10:<br>
+                „Cine sare, nu obosește,<br>
+                Are arcuri, dar nu vestește."
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(13, 'c', this)">a) Minge</button>
+                <button class="option-btn" onclick="selectAnswer(13, 'c', this)">b) Băț</button>
+                <button class="option-btn" onclick="selectAnswer(13, 'c', this)">c) Trambulină</button>
+            </div>
+            <div id="feedback13" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next13" onclick="nextSection(14)">Jocul cu povești! 📚</button>
+        </div>
+
+        <!-- Secțiunea 14: Începutul jocului cu povești -->
+        <div class="game-section hidden" id="section14">
+            <h2 class="game-title">📚 Ghicește Povestea!</h2>
+            
+            <div class="story-box">
+                <p>Acum să vedem cât de bine cunoști poveștile clasice! 📖</p>
+                <p>Citește descrierea și alege răspunsul corect! ✨</p>
+            </div>
+
+            <div class="question">
+                🔍 O fetiță cu o capă roșie merge prin pădure la bunica, dar dă peste un lup viclean...
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(14, 'c', this)">a) Albă ca Zăpada</button>
+                <button class="option-btn" onclick="selectAnswer(14, 'c', this)">b) Scufița Verde</button>
+                <button class="option-btn" onclick="selectAnswer(14, 'c', this)">c) Scufița Roșie</button>
+            </div>
+            <div id="feedback14" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next14" onclick="nextSection(15)">Următoarea poveste! 🌱</button>
+        </div>
+
+        <!-- Secțiunea 15: Jack și vrejul de fasole -->
+        <div class="game-section hidden" id="section15">
+            <h2 class="game-title">🌱 Povestea cu uriașul</h2>
+            
+            <div class="question">
+                🔍 Un băiat primește niște boabe magice care cresc până la nori, unde găsește un uriaș...
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(15, 'a', this)">a) Jack și vrejul de fasole</button>
+                <button class="option-btn" onclick="selectAnswer(15, 'a', this)">b) Pinocchio</button>
+                <button class="option-btn" onclick="selectAnswer(15, 'a', this)">c) Punguța cu doi bani</button>
+            </div>
+            <div id="feedback15" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next15" onclick="nextSection(16)">Următoarea poveste! 👠</button>
+        </div>
+
+        <!-- Secțiunea 16: Cenușăreasa -->
+        <div class="game-section hidden" id="section16">
+            <h2 class="game-title">👠 Povestea cu papucul</h2>
+            
+            <div class="question">
+                🔍 O fată frumoasă scapă un papuc la bal și un prinț încearcă să o găsească...
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(16, 'b', this)">a) Frumoasa Adormită</button>
+                <button class="option-btn" onclick="selectAnswer(16, 'b', this)">b) Cenușăreasa</button>
+                <button class="option-btn" onclick="selectAnswer(16, 'b', this)">c) Rapunzel</button>
+            </div>
+            <div id="feedback16" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next16" onclick="nextSection(17)">Următoarea poveste! 🤥</button>
+        </div>
+
+        <!-- Secțiunea 17: Pinocchio -->
+        <div class="game-section hidden" id="section17">
+            <h2 class="game-title">🤥 Povestea cu nasul</h2>
+            
+            <div class="question">
+                🔍 Un păpușel de lemn spune minciuni, iar nasul lui crește de fiecare dată...
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(17, 'b', this)">a) Hansel și Gretel</button>
+                <button class="option-btn" onclick="selectAnswer(17, 'b', this)">b) Pinocchio</button>
+                <button class="option-btn" onclick="selectAnswer(17, 'b', this)">c) Rățușca cea urâtă</button>
+            </div>
+            <div id="feedback17" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next17" onclick="nextSection(18)">Următoarea poveste! 💰</button>
+        </div>
+
+        <!-- Secțiunea 18: Punguța cu doi bani -->
+        <div class="game-section hidden" id="section18">
+            <h2 class="game-title">💰 Povestea cu punguța</h2>
+            
+            <div class="question">
+                🔍 Un urs, o vulpe și un cocoș apar în aventuri hazlii, dar numai unul găsește o punguță...
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(18, 'c', this)">a) Capra cu trei iezi</button>
+                <button class="option-btn" onclick="selectAnswer(18, 'c', this)">b) Ursul păcălit de vulpe</button>
+                <button class="option-btn" onclick="selectAnswer(18, 'c', this)">c) Punguța cu doi bani</button>
+            </div>
+            <div id="feedback18" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next18" onclick="nextSection(19)">Următoarea poveste! 😴</button>
+        </div>
+
+        <!-- Secțiunea 19: Frumoasa Adormită -->
+        <div class="game-section hidden" id="section19">
+            <h2 class="game-title">😴 Povestea cu somnul</h2>
+            
+            <div class="question">
+                🔍 O fată adoarme într-un castel timp de 100 de ani, până când un prinț o trezește...
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(19, 'c', this)">a) Cenușăreasa</button>
+                <button class="option-btn" onclick="selectAnswer(19, 'c', this)">b) Alba ca Zăpada</button>
+                <button class="option-btn" onclick="selectAnswer(19, 'c', this)">c) Frumoasa Adormită</button>
+            </div>
+            <div id="feedback19" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next19" onclick="nextSection(20)">Următoarea poveste! 🍎</button>
+        </div>
+
+        <!-- Secțiunea 20: Alba ca Zăpada -->
+        <div class="game-section hidden" id="section20">
+            <h2 class="game-title">🍎 Povestea cu piticii</h2>
+            
+            <div class="question">
+                🔍 O fată fuge de mama vitregă, trăiește cu 7 pitici și este salvată de un prinț...
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(20, 'a', this)">a) Alba ca Zăpada</button>
+                <button class="option-btn" onclick="selectAnswer(20, 'a', this)">b) Rapunzel</button>
+                <button class="option-btn" onclick="selectAnswer(20, 'a', this)">c) Gretel</button>
+            </div>
+            <div id="feedback20" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next20" onclick="nextSection(21)">Următoarea poveste! 🍭</button>
+        </div>
+
+        <!-- Secțiunea 21: Hansel și Gretel -->
+        <div class="game-section hidden" id="section21">
+            <h2 class="game-title">🍭 Povestea cu casa dulce</h2>
+            
+            <div class="question">
+                🔍 Doi frați se pierd în pădure și găsesc o casă din turtă dulce...
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(21, 'c', this)">a) Capra cu trei iezi</button>
+                <button class="option-btn" onclick="selectAnswer(21, 'c', this)">b) Fata moșului și fata babei</button>
+                <button class="option-btn" onclick="selectAnswer(21, 'c', this)">c) Hansel și Gretel</button>
+            </div>
+            <div id="feedback21" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next21" onclick="nextSection(22)">Următoarea poveste! 🐷</button>
+        </div>
+
+        <!-- Secțiunea 22: Cei trei purceluși -->
+        <div class="game-section hidden" id="section22">
+            <h2 class="game-title">🐷 Povestea cu casele</h2>
+            
+            <div class="question">
+                🔍 Trei frați își construiesc case, dar un lup vine și încearcă să le dărâme...
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(22, 'b', this)">a) Păcală și Tândală</button>
+                <button class="option-btn" onclick="selectAnswer(22, 'b', this)">b) Cei trei purceluși</button>
+                <button class="option-btn" onclick="selectAnswer(22, 'b', this)">c) Prâslea cel voinic</button>
+            </div>
+            <div id="feedback22" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next22" onclick="nextSection(23)">Ultima poveste! 🍎</button>
+        </div>
+
+        <!-- Secțiunea 23: Prâslea cel voinic -->
+        <div class="game-section hidden" id="section23">
+            <h2 class="game-title">🍎 Povestea cu merele de aur</h2>
+            
+            <div class="question">
+                🔍 Un băiețel voinic merge să prindă un zmeu și aduce mere de aur...
+            </div>
+
+            <div class="options">
+                <button class="option-btn" onclick="selectAnswer(23, 'b', this)">a) Harap Alb</button>
+                <button class="option-btn" onclick="selectAnswer(23, 'b', this)">b) Prâslea cel voinic și merele de aur</button>
+                <button class="option-btn" onclick="selectAnswer(23, 'b', this)">c) Ivan Turbincă</button>
+            </div>
+            <div id="feedback23" class="feedback hidden"></div>
+            <button class="next-btn hidden" id="next23" onclick="showFinalResults()">Vezi rezultatele finale! 🏆</button>
+        </div>
+
+        <!-- Rezultate finale -->
+        <div class="game-section hidden" id="finalResults">
+            <h2 class="game-title">🎉 Felicitări!</h2>
+            <div class="celebration">
+                <h2>🏆 Ai terminat aventura!</h2>
+                <p id="finalScore"></p>
+                <button class="next-btn" onclick="restartGame()">Joacă din nou! 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let correctAnswers = 0;
+        let incorrectAnswers = 0;
+        let currentSection = 1;
+        let totalSections = 23;
+        let answered = {};
+
+        function updateScore() {
+            document.getElementById('correctScore').textContent = correctAnswers;
+            document.getElementById('incorrectScore').textContent = incorrectAnswers;
+            
+            const progress = (currentSection - 1) / totalSections * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function selectAnswer(sectionId, correctAnswer, button) {
+            if (answered[sectionId]) return;
+            
+            answered[sectionId] = true;
+            const selectedAnswer = button.textContent.charAt(0);
+            const isCorrect = selectedAnswer === correctAnswer;
+            
+            // Disable all buttons in this section
+            const allButtons = button.parentElement.querySelectorAll('.option-btn');
+            allButtons.forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent.charAt(0) === correctAnswer) {
+                    btn.classList.add('correct');
+                } else if (btn === button && !isCorrect) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            showFeedback(sectionId, isCorrect);
+        }
+
+        function showFeedback(sectionId, isCorrect) {
+            const feedback = document.getElementById('feedback' + sectionId);
+            feedback.classList.remove('hidden');
+            
+            if (isCorrect) {
+                correctAnswers++;
+                feedback.textContent = '🎉 Bravo! Răspuns corect!';
+                feedback.classList.add('correct');
+                playSound('correct');
+            } else {
+                incorrectAnswers++;
+                feedback.textContent = '😊 Nu-i nimic! Încearcă să te gândești mai bine data viitoare!';
+                feedback.classList.add('incorrect');
+                playSound('incorrect');
+            }
+
+            updateScore();
+            
+            // Show next button
+            document.getElementById('next' + sectionId).classList.remove('hidden');
+        }
+
+        function nextSection(nextId) {
+            document.getElementById('section' + currentSection).classList.add('hidden');
+            document.getElementById('section' + nextId).classList.remove('hidden');
+            currentSection = nextId;
+            updateScore();
+        }
+
+        function showFinalResults() {
+            document.getElementById('section' + currentSection).classList.add('hidden');
+            document.getElementById('finalResults').classList.remove('hidden');
+            
+            const totalQuestions = correctAnswers + incorrectAnswers;
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            let message = '';
+            if (percentage >= 80) {
+                message = `🌟 Fantastic! Ai răspuns corect la ${correctAnswers} din ${totalQuestions} întrebări (${percentage}%)! Ești un adevărat expert în ghicitori și povești!`;
+            } else if (percentage >= 60) {
+                message = `👏 Foarte bine! Ai răspuns corect la ${correctAnswers} din ${totalQuestions} întrebări (${percentage}%)! Continuă să exersezi!`;
+            } else {
+                message = `💪 Bun început! Ai răspuns corect la ${correctAnswers} din ${totalQuestions} întrebări (${percentage}%)! Cu puțin exercițiu vei fi și mai bun!`;
+            }
+            
+            document.getElementById('finalScore').textContent = message;
+        }
+
+        function restartGame() {
+            correctAnswers = 0;
+            incorrectAnswers = 0;
+            currentSection = 1;
+            answered = {};
+            
+            // Reset all sections
+            for (let i = 1; i <= 23; i++) {
+                document.getElementById('section' + i).classList.add('hidden');
+                const buttons = document.querySelectorAll('#section' + i + ' .option-btn');
+                buttons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.classList.remove('correct', 'incorrect');
+                });
+                
+                const feedback = document.getElementById('feedback' + i);
+                feedback.classList.add('hidden');
+                feedback.classList.remove('correct', 'incorrect');
+                
+                const nextBtn = document.getElementById('next' + i);
+                if (nextBtn) nextBtn.classList.add('hidden');
+            }
+            
+            document.getElementById('finalResults').classList.add('hidden');
+            document.getElementById('section1').classList.remove('hidden');
+            updateScore();
+        }
+
+        function playSound(type) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                if (type === 'correct') {
+                    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                    oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                } else {
+                    oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // A3
+                    oscillator.frequency.setValueAtTime(196, audioContext.currentTime + 0.1); // G3
+                }
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        // Initialize the game
+        updateScore();
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => console.log('SW registered'))
+                .catch(error => console.log('SW registration failed'));
+        }
+    </script>
+</body>
+</html>
+
